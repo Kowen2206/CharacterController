@@ -2,34 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerWalkState : PlayerBaseState
+public class PlayerIdleState : PlayerBaseState
 {
-    public PlayerWalkState(PlayerStateMachine currentContext, PlayerStateFactory playerStateFactory)
+    public PlayerIdleState(PlayerStateMachine currentContext, PlayerStateFactory playerStateFactory)
     : base (currentContext, playerStateFactory){
 
     }
 
     public override void EnterState()
     {
-        _ctx.Animator.SetBool(_ctx.IsWalkingHash, true);
+        _ctx.Animator.SetBool(_ctx.IsWalkingHash, false);
         _ctx.Animator.SetBool(_ctx.IsRunningHash, false);
+        _ctx.AppliedMovementX = 0;
+        _ctx.AppliedMovementZ = 0;
     }
     public override void UpdateState()
     {
         CheckSwitchStates();
-        _ctx.AppliedMovementX = _ctx.CurrentMovementInput.x;
-        _ctx.AppliedMovementZ = _ctx.CurrentMovementInput.y;
     }
     public override void ExitState(){}
     public override void CheckSwitchStates()
     {
-        if(!_ctx.IsmovementPressed)
-        {
-            SwitchState(_factory.Idle());
-        } else
         if(_ctx.IsmovementPressed && _ctx.IsRunPressed)
         {
             SwitchState(_factory.Run());
+        } else
+        if(_ctx.IsmovementPressed)
+        {
+            SwitchState(_factory.Walk());
         }
     }
     public override void InitializeSubState(){}

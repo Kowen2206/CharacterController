@@ -2,17 +2,62 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerBaseState : MonoBehaviour
+public abstract class PlayerBaseState
 {
-    // Start is called before the first frame update
-    void Start()
+
+    protected bool _isRootState = false;
+    protected PlayerStateMachine _ctx;
+    protected PlayerStateFactory _factory;
+    protected PlayerBaseState _currentSuperState;
+    protected PlayerBaseState _currentSubState;
+
+    public PlayerBaseState(PlayerStateMachine currentContext, PlayerStateFactory playerStateFactory)
     {
-        
+        _ctx = currentContext;
+        _factory = playerStateFactory;
     }
 
-    // Update is called once per frame
-    void Update()
+    public abstract void EnterState();
+    public abstract void UpdateState();
+    public abstract void ExitState();
+    public abstract void CheckSwitchStates();
+    public abstract void InitializeSubState();
+    public void UpdateStates()
     {
-        
+        UpdateState();
+        if(_currentSubState != null)
+        {
+            _currentSubState.UpdateStates();
+        }
+    }
+
+    public void ExitStates()
+    {
+        ExitState();
+        if(_currentSubState != null)
+        {
+            _currentSubState.ExitStates();
+        }
+    }
+    protected void SwitchState(PlayerBaseState newState){
+        ExitState();
+
+        newState.EnterState();
+        if(_isRootState)
+        {
+            _ctx.CurrentState = newState;
+        } else if(_currentSuperState != null)
+        {
+            _currentSuperState.SetSubState(newState);
+        }
+    }
+    protected void SetSuperState(PlayerBaseState newSuperState)
+    {
+        _currentSuperState = newSuperState;
+    }
+    protected void SetSubState(PlayerBaseState newSubState)
+    {
+        _currentSubState = newSubState;
+        newSubState.SetSuperState(this);
     }
 }

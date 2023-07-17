@@ -4,17 +4,29 @@ using UnityEngine;
 
 public class PlayerStateFactory : MonoBehaviour
 {
-
-    
-    // Start is called before the first frame update
-    void Start()
+    PlayerStateMachine _context;
+    public PlayerStateFactory(PlayerStateMachine currentContext)
     {
-        
+        _context = currentContext;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    public PlayerBaseState Idle(){
+        return new PlayerIdleState(_context, this);
+    }
+
+    public PlayerBaseState Walk(){
+        return new PlayerWalkState(_context, this);
+    }
+
+    public PlayerBaseState Run(){
+        return new PlayerRunState(_context, this);
+    }
+
+    public PlayerBaseState Jump(){
+        return new PlayerJumpState(_context, this);
+    }
+
+    public PlayerBaseState Grounded(){
+        return new PlayerGroundedState(_context, this);
     }
 }
