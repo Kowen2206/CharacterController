@@ -22,9 +22,11 @@ public class PlayerStateMachine : MonoBehaviour
     // variables to store optimazed setter/getter parameter IDs
     int 
     _isWalkingHash, 
-    _isRunningHash;
+    _isRunningHash,
+    _isFallingHash;
     public int IsWalkingHash {get => _isWalkingHash;}
     public int IsRunningHash {get => _isRunningHash;}
+    public int IsFallingHash {get => _isFallingHash;}
 
     //variables to store player input values
     Vector2 
@@ -129,6 +131,7 @@ public class PlayerStateMachine : MonoBehaviour
         _isRunningHash = Animator.StringToHash("Running");
         _isJumppingHash = Animator.StringToHash("Jumping");
         _jumpCountHash = Animator.StringToHash("JumpCount");
+        _isFallingHash = Animator.StringToHash("Falling");
 
         _playerInput.CharacterControlls.Move.performed += OnMoveInput;
         _playerInput.CharacterControlls.Move.canceled += OnMoveInput;
@@ -138,6 +141,11 @@ public class PlayerStateMachine : MonoBehaviour
         _playerInput.CharacterControlls.Jump.canceled += OnJump;
 
         SetUpJumpVariables();
+    }
+
+    public void Start()
+    {
+        _characterController.Move(_appliedMovement * Time.deltaTime);
     }
 
     void OnJump(InputAction.CallbackContext ctx)
@@ -174,7 +182,7 @@ public class PlayerStateMachine : MonoBehaviour
     void SetUpJumpVariables()
     {
         float timeToApex = _maxJumpTime / 2;
-        _gravity = (-2 * _maxJumpHeight) / Mathf.Pow(timeToApex, 2);
+        float initialGravity = (-2 * _maxJumpHeight) / Mathf.Pow(timeToApex, 2);
         _initialJumpVelocity = (2 * _maxJumpHeight) / timeToApex;
         float secondJumpGravity = (-2 * _maxJumpHeight) / Mathf.Pow(timeToApex * 1.25f, 2);
         float SecondJumpInitialVelocity = (2 * _maxJumpHeight) / (timeToApex * 1.25f);
@@ -185,8 +193,8 @@ public class PlayerStateMachine : MonoBehaviour
         _initialJumpVelocities.Add(2, SecondJumpInitialVelocity);
         _initialJumpVelocities.Add(3, thirdJumpInitialVelocity);
     
-        _jumpGravities.Add(0, _gravity);
-        _jumpGravities.Add(1, _gravity);
+        _jumpGravities.Add(0, initialGravity);
+        _jumpGravities.Add(1, initialGravity);
         _jumpGravities.Add(2, secondJumpGravity);
         _jumpGravities.Add(3, thirdJumpGravity);
     }

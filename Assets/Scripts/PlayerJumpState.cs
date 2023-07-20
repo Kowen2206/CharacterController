@@ -39,13 +39,12 @@ public class PlayerJumpState : PlayerBaseState
     }
     public override void CheckSwitchStates()
     {
-        Debug.Log(_ctx.isGrounded);
         if(_ctx.isGrounded)
         {
-            Debug.Log("This beach is grounded");
             SwitchState(_factory.Grounded());
         }
     }
+
     public override void InitializeSubState(){}
 
     public void HandleJump()
